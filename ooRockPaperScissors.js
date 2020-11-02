@@ -3,28 +3,35 @@
 // The computer makes a choice.
 // The winner is displayed.
 
-// The classical approach to planning an object-oriented application includes several steps:
+// The classical approach to planning an OO app includes several steps:
 //1- Write a textual description of the problem or exercise.
 //2- Extract the significant nouns and verbs from the description.
 //3- Organize and associate the verbs with the nouns.
 
 // first step:
-// The RPS game is two players game, in our case the user is one of those player and the anthor palyer is a computer.
-// the game start with user chosing one of three options : Rock, Paper or Scissor.
+// The RPS game is two players game,
+// in our case the user is one of those player
+// and the anthor palyer is a computer.
+// the game start with user chosing
+//   - one of three options : Rock, Paper or Scissor.
 // then the computer make a choice
-// then displey the winner who selected by comparing their choices with the following rules:
+// then displey the winner who selected
+//  - by comparing their choices with the following rules:
 // paper wraps the rock => paper beats rock
 // scissor cuts the paper => scissor beats paper
 // rock crushes scissor => rock beats scissors
+// keeping score unitl one of the player reachs five points
+
 
 // second step:
-// nouns : rock, scissor, papper, user, computer => player, move, rule
-// verbs : compare, choose
+// nouns : rock, scissor, papper, score, user, computer => player, move, rule, score
+// verbs : compare, choose, incrementScore
 
 // third step:
-//player => choose a move
+// player => choose a move
 // move => comaper moves
 // rule => compare moves based on rule
+// score => increment winner score
 
 // objects => nouns
 // methods => verbs
@@ -64,11 +71,16 @@ function createPlayer() {
   return {
     // state
     move: null,
+    score : 0,
+    incrementScore(){
+      this.score += 1;
+    }
   };
 }
 
 // next step : Orchestration engine:
-// engine object which orchestrate the objects and where the procedural program flow should be.
+// engine object which orchestrate the objects
+//and where the procedural program flow should be.
 const RPSGame = {
   human: createHuman(),
   computer: createComputer(),
@@ -78,48 +90,93 @@ const RPSGame = {
   displayGoodbyeMessage() {
     console.log("Thanks for playing Rock, Paper, Scissors game, Goodbye!");
   },
-  displayWinner() {
-    let humanChoice = this.human.move;
-    let computerChoice = this.computer.move;
-
-    console.log(`Your choice: ${humanChoice}`);
-    console.log(`The computer chose: ${computerChoice}`);
-
-    if (
-      (humanChoice === "Paper" && computerChoice === "Rock") ||
-      (humanChoice === "Rock" && computerChoice === "Scissors") ||
-      (humanChoice === "Scissors" && computerChoice === "Paper")
-    ) {
+  displayWinner(winner) {
+    console.log(`Your choice: ${this.human.move}`);
+    console.log(`The computer chose: ${this.computer.move}`);
+    if (winner === "Human"){
       console.log("You win!");
-    } else if (
-      (computerChoice === "Paper" && humanChoice === "Rock") ||
-      (computerChoice === "Rock" && humanChoice === "Scissors") ||
-      (computerChoice === "Scissors" && humanChoice === "Paper")
-    ) {
+    } else if (winner === "Computer") {
       console.log("Computer win!");
     } else {
-      console.log("It Is A Tie!");
+      console.log(winner);
     }
+  },
+  compareChoices(){
+    if (
+      (this.human.move === "Paper" && this.computer.move === "Rock") ||
+      (this.human.move === "Rock" && this.computer.move === "Scissors") ||
+      (this.human.move === "Scissors" && this.computer.move === "Paper")
+    ) {
+      return "Human";
+    } else if (
+      (this.computer.move === "Paper" && this.human.move === "Rock") ||
+      (this.computer.move === "Rock" && this.human.move === "Scissors") ||
+      (this.computer.move === "Scissors" && this.human.move === "Paper")
+    ) {
+      return "Computer";
+    } else {
+      return "It Is A Tie!";
+    }
+  },
+  changeScore(winner){
+    if (winner === "Human"){
+      this.human.score += 1;
+    } else if (winner === "Computer") {
+      this.computer.score += 1;
+    } 
+  },
+  playMatch(){
+      this.clear();
+      this.displayScores();
+      this.human.choose();
+      this.computer.choose();
+      let winner = this.compareChoices();
+      this.displayWinner(winner);
+      this.changeScore(winner);
   },
   palyAgain() {
     console.log("Would you like to play again? Enter(Yes/No)");
     let answer = readline.question().toLowerCase();
     return answer[0] === "y";
   },
+  displayGameWinner(){
+    if(this.human.score === 5){
+      console.log("You won the Game!");
+    }else{
+      console.log("Computer won the Game!");
+    }
+  },
+  displayScores(){
+    console.log(`Your score: ${this.human.score}, Computer score: ${this.computer.score}`);
+  },
   clear() {
     console.clear();
   },
+  reset(){
+    this.human.score = 0;
+    this.computer.score = 0;
+    this.human.move = null;
+    this.computer.move = null;
+  },
   play() {
     this.displayWelComeMessage();
-    while (true) {
+    while(true){
+      this.reset();
       this.clear();
-      this.human.choose();
-      this.computer.choose();
-      this.displayWinner();
-      if (!this.palyAgain()) break;
+      while(true){
+        this.playMatch();
+        if(this.human.score === 5 || this.computer.score === 5) break;
+        readline.question("Enter any letter to continue..");
+      }
+      this.clear();
+      this.displayScores();
+      this.displayGameWinner();
+      if(!this.palyAgain()) break;
     }
     this.displayGoodbyeMessage();
-  },
+  }
 };
 
 RPSGame.play();
+
+
