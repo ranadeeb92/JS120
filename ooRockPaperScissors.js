@@ -19,12 +19,25 @@
 //  - by comparing their choices with the following rules:
 // paper wraps the rock => paper beats rock
 // scissor cuts the paper => scissor beats paper
+
 // rock crushes scissor => rock beats scissors
+// rock crushes lizard => rock beats lizard
+
+// lizard poisons spock => lizard beats spock
+// lizard eats paper => lizard beats paper
+
+// spock smashes scissors => spock beats scissors
+
+// scissors decapitates lizard => scissors beats lizard
+// paper disproves spock => paper beats spock
+
+// spock vaporize rock => spock beats rock
 // keeping score unitl one of the player reachs five points
+// 
 
 
 // second step:
-// nouns : rock, scissor, papper, score, user, computer => player, move, rule, score
+// nouns : rock, scissor, papper, score, lizard, spock, user, computer => player, move, rule, score
 // verbs : compare, choose, incrementScore
 
 // third step:
@@ -37,12 +50,12 @@
 // methods => verbs
 
 const readline = require("readline-sync");
+const choices = ["Rock", "Paper", "Scissors", "Lizard", "Spock"];
 
 function createComputer() {
   let playerObj = createPlayer();
   let computerObj = {
     choose() {
-      let choices = ["Rock", "Paper", "Scissors"];
       let randomIndex = Math.floor(Math.random() * choices.length);
       this.move = choices[randomIndex];
     },
@@ -54,7 +67,6 @@ function createHuman() {
   let palyerObj = createPlayer();
   let humanObj = {
     choose() {
-      let choices = ["Rock", "Paper", "Scissors"];
       let userInput;
       while (true) {
         console.log(`Choose one of the following moves: ${choices.join(", ")}`);
@@ -103,15 +115,19 @@ const RPSGame = {
   },
   compareChoices(){
     if (
-      (this.human.move === "Paper" && this.computer.move === "Rock") ||
-      (this.human.move === "Rock" && this.computer.move === "Scissors") ||
-      (this.human.move === "Scissors" && this.computer.move === "Paper")
+      (this.human.move === "Paper" && (this.computer.move === "Rock" || this.computer.move === "Spock")) ||
+      (this.human.move === "Rock" && (this.computer.move === "Scissors" || this.computer.move === "Lizard")) ||
+      (this.human.move === "Scissors" && (this.computer.move === "Paper" || this.computer.move === "Lizard"))||
+      (this.human.move === "Lizard" && (this.computer.move === "Spock" || this.computer.move === "Paper" )) ||
+      (this.human.move === "Spock" && (this.computer.move === "Rock" || this.computer.move === "Scissors") )
     ) {
       return "Human";
     } else if (
-      (this.computer.move === "Paper" && this.human.move === "Rock") ||
-      (this.computer.move === "Rock" && this.human.move === "Scissors") ||
-      (this.computer.move === "Scissors" && this.human.move === "Paper")
+      (this.computer.move === "Paper" && (this.human.move === "Rock" || this.human.move === "Spock")) ||
+      (this.computer.move === "Rock" && (this.human.move === "Scissors" || this.human.move === "Lizard")) ||
+      (this.computer.move === "Scissors" && (this.human.move === "Paper" || this.human.move === "Lizard"))||
+      (this.computer.move === "Lizard" && (this.human.move === "Spock" || this.human.move === "Paper" )) ||
+      (this.computer.move === "Spock" && (this.human.move === "Rock" || this.human.move === "Scissors") )
     ) {
       return "Computer";
     } else {
