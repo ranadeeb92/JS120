@@ -34,6 +34,10 @@ class Square {
     this.marker = marker;
   }
 
+  isUnused(){
+    return this.marker === Square.UNUSED_SQUARE;
+  }
+
   setMarker(marker){
     this.marker = marker;
   }
@@ -54,6 +58,11 @@ class Board {
   
   markSquareAt(key, marker){
     this.squares[key].setMarker(marker);
+  }
+
+  unusedSquares(){
+    let keys = Object.keys(this.squares);
+    return keys.filter(key => this.squares[key].isUnused());
   }
 
   display() {
@@ -105,10 +114,8 @@ class TTTGame {
     while (true) {
       this.board.display();
       this.firstPlayerMoves();
-      this.board.display();
       if (this.gameOver()) break;
       this.secondPlayerMoves();
-      this.board.display();
       if (this.gameOver()) break;
       //break; // execute loop once for now
     }
@@ -125,17 +132,23 @@ class TTTGame {
   firstPlayerMoves() {
     let choice;
     while(true){
-      choice = readline.question('Please choose square from 1 to 9  ');
-      let integerValue = parseInt(choice, 10);
-      if(integerValue >= 1 && integerValue <= 9) break;
+      let validChoices = this.board.unusedSquares();
+      choice = readline.question(`Please choose square from ${validChoices.join(', ')} `);
+      //let integerValue = parseInt(choice, 10);
+      if(validChoices.includes(choice)) break;
       console.log('Sorry, That is not a valid choice!');
       console.log("");
     }
     this.board.markSquareAt(choice, this.human.getMarker());
   }
   secondPlayerMoves() {
-    let randomChoice = Math.floor((Math.random() * 9) + 1);
-    this.board.markSquareAt(randomChoice, this.computer.getMarker());
+    let validChoices = this.board.unusedSquares();
+    let choice;
+    do{
+      choice = Math.floor((Math.random() * 9) + 1).toString();
+    }while(!validChoices.includes(choice))
+
+    this.board.markSquareAt(choice, this.computer.getMarker());
   }
   gameOver() {}
   displayResults() {}
