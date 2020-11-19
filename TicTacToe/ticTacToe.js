@@ -1,10 +1,11 @@
+const readline = require("readline-sync");
 class Player {
-  constructor() {
+  constructor(marker) {
+    this.marker = marker;
     // mabey we need to define marker to keep truck of this player symbol
   }
-  mark() {
-    // need a way to access the borad
-    // and mark a square with tis player marker
+  getMarker(){
+    return this.marker;
   }
   play() {
     // we need a way for each player to play the game
@@ -12,10 +13,14 @@ class Player {
 }
 
 class Human extends Player {
-  constructor() {}
+  constructor() {
+    super(Square.HUMAN_SQUARE);
+  }
 }
 class Computer extends Player {
-  constructor() {}
+  constructor() {
+    super(Square.COPMUTER_SQUARE);
+  }
 }
 
 class Square {
@@ -28,6 +33,10 @@ class Square {
     // we need a way to keep truck on the square's marker
     this.marker = marker;
   }
+
+  setMarker(marker){
+    this.marker = marker;
+  }
   toString() {
     return this.marker;
   }
@@ -37,18 +46,16 @@ class Board {
   constructor() {
     // we need a way to define borad 3x3
     // we need data struchure to store the information that will be on the board
-    this.squares = {
-      1: new Square(), // the value is the marker associated with each square
-      2: new Square(),
-      3: new Square(),
-      4: new Square(),
-      5: new Square(),
-      6: new Square(),
-      7: new Square(),
-      8: new Square(),
-      9: new Square(),
-    };
+    this.squares = {};
+    for(let squareNum = 1; squareNum <= 9; squareNum++){
+      this.squares[squareNum] = new Square();
+    }
   }
+  
+  markSquareAt(key, marker){
+    this.squares[key].setMarker(marker);
+  }
+
   display() {
     console.log("");
     console.log("      |      |");
@@ -78,16 +85,18 @@ class row {
   }
 }
 
-class marker {
-  constructor() {
-    //it is something that represent the player symbol "piece" on the board
-  }
-}
+// class marker {
+//   constructor() {
+//     //it is something that represent the player symbol "piece" on the board
+//   }
+// }
 
 class TTTGame {
   constructor() {
     // need a board and teo player
     this.board = new Board();
+    this.human = new Human();
+    this.computer = new Computer();
   }
   play() {
     // Spike
@@ -96,10 +105,12 @@ class TTTGame {
     while (true) {
       this.board.display();
       this.firstPlayerMoves();
+      this.board.display();
       if (this.gameOver()) break;
       this.secondPlayerMoves();
+      this.board.display();
       if (this.gameOver()) break;
-      break; // execute loop once for now
+      //break; // execute loop once for now
     }
     this.displayResults();
     this.displayMessage("Thank you for playing Tic Tac Toe! GoodBye!");
@@ -111,8 +122,21 @@ class TTTGame {
   displayMessage(msg) {
     console.log(msg);
   }
-  firstPlayerMoves() {}
-  secondPlayerMoves() {}
+  firstPlayerMoves() {
+    let choice;
+    while(true){
+      choice = readline.question('Please choose square from 1 to 9  ');
+      let integerValue = parseInt(choice, 10);
+      if(integerValue >= 1 && integerValue <= 9) break;
+      console.log('Sorry, That is not a valid choice!');
+      console.log("");
+    }
+    this.board.markSquareAt(choice, this.human.getMarker());
+  }
+  secondPlayerMoves() {
+    let randomChoice = Math.floor((Math.random() * 9) + 1);
+    this.board.markSquareAt(randomChoice, this.computer.getMarker());
+  }
   gameOver() {}
   displayResults() {}
 }
