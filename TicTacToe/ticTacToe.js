@@ -97,7 +97,7 @@ class Board {
     console.clear();
     console.log('');
     console.log('');
-    this.display();
+    this.display();          
   }
 }
 
@@ -112,7 +112,7 @@ class TTTGame {
   static POSSIBLE_WINNING_ROWS = [
     ['1', '2', '3'],
     ['4', '5', '6'],
-    ['7', '8', '9'],
+    ['7', '8', '9'],                              
     ['1', '4', '7'],
     ['2', '5', '8'],
     ['3', '6', '9'],
